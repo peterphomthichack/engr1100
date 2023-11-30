@@ -74,3 +74,5 @@ while(start_program)
         end
     end
 end
+
+%test
