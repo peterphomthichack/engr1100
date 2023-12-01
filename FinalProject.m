@@ -41,10 +41,14 @@ while(start_program)
             color = readColor(color_sensor);
             checking_obstacles = readDistance(sonic_sensor);
             if(color == "red" && first_stop == false)
+                playTone(lego, 1000, 3, 10);
+                writeStatusLight(lego, 'red', 'pulsing')
                 stop(right_motor, 1);
                 stop(left_motor, 1);
                 pause(3);
+                writeStatusLight(lego, 'off');
                 first_stop = true;
+
             end
             if(checking_obstacles <= 0.17 && turning == true)
                 disp(checking_obstacles);
@@ -69,6 +73,13 @@ while(start_program)
             if(color == "green")
             stop(right_motor, 1);
             stop(left_motor, 1);
+            writeStatusLight(lego, 'green', 'pulsing');
+            playTone(lego, 900, 0.5, 10);
+            pause(0.2);
+            playTone(lego, 1200, 0.5, 10);
+            pause(0.2);
+            playTone(lego, 900, 0.5, 10);
+            writeStatusLight(lego, 'off');
             checking_color = false;
             end
         end
