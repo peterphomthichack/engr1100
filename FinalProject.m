@@ -14,17 +14,14 @@ color_sensor = colorSensor(lego);
 
 % Motors initialization and settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-motor_speed = 30;
-motor_speed2 = -30;
+yellow_speed = 30;
+motor_speed = 40;
 right_motor = motor(lego,'C');
 left_motor = motor(lego,'B');
-
 
 right_motor.Speed = motor_speed;
 left_motor.Speed = motor_speed;
 
-
-left_motor2.Speed = motor_speed2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 first_stop = false;
@@ -41,7 +38,16 @@ while(start_program)
             start(left_motor);
             color = readColor(color_sensor);
             checking_obstacles = readDistance(sonic_sensor);
+            if(color == "yellow")
+                writeLCD(lego, 'Approching a stop sign!');
+                writeStatusLight(lego, 'red', 'pulsing')
+                left_motor.Speed = yellow_speed;
+                right_motor.Speed = yellow_speed;
+                writeStatusLight(lego, 'off');
+            end
             if(color == "red" && first_stop == false)
+                left_motor.Speed = motor_speed;
+                right_motor.Speed = motor_speed;
                 writeLCD(lego, 'Stopping at the stop sign!');
                 playTone(lego, 1000, 3, 10);
                 writeStatusLight(lego, 'red', 'pulsing')
@@ -52,6 +58,7 @@ while(start_program)
                 writeStatusLight(lego, 'green', 'solid');
                 first_stop = true;
             end
+
             if(checking_obstacles <= 0.17 && turning == true)
                 disp(checking_obstacles);
                 stop(right_motor);
