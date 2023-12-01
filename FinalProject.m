@@ -3,6 +3,7 @@ clc;
 lego = legoev3('usb');
 clearLCD(lego)
 start_program = true;
+tone_delays = 0.3;
 
 gyro_sensor = gyroSensor(lego);
 
@@ -41,14 +42,15 @@ while(start_program)
             color = readColor(color_sensor);
             checking_obstacles = readDistance(sonic_sensor);
             if(color == "red" && first_stop == false)
+                writeLCD(lego, 'Stopping at the stop sign!');
                 playTone(lego, 1000, 3, 10);
                 writeStatusLight(lego, 'red', 'pulsing')
                 stop(right_motor, 1);
                 stop(left_motor, 1);
                 pause(3);
-                writeStatusLight(lego, 'off');
+                writeLCD(lego, 'Driving to the next point!');
+                writeStatusLight(lego, 'green', 'solid');
                 first_stop = true;
-
             end
             if(checking_obstacles <= 0.17 && turning == true)
                 disp(checking_obstacles);
@@ -71,16 +73,23 @@ while(start_program)
                 end
             end
             if(color == "green")
-            stop(right_motor, 1);
-            stop(left_motor, 1);
-            writeStatusLight(lego, 'green', 'pulsing');
-            playTone(lego, 900, 0.5, 10);
-            pause(0.2);
-            playTone(lego, 1200, 0.5, 10);
-            pause(0.2);
-            playTone(lego, 900, 0.5, 10);
-            writeStatusLight(lego, 'off');
-            checking_color = false;
+                clearLCD(lego)
+                writeLCD(lego, 'Checkpoint Arrived!');
+                stop(right_motor, 1);
+                stop(left_motor, 1);
+                writeStatusLight(lego, 'green', 'pulsing');
+                playTone(lego, 1000, 1, 10);
+                pause(tone_delays);
+                playTone(lego, 1500, 1, 10);
+                pause(tone_delays);
+                playTone(lego, 700, 1, 10);
+                pause(tone_delays);
+                playTone(lego, 1250, 1, 10);
+                pause(tone_delays);
+                playTone(lego, 500, 1, 10);
+                pause(tone_delays);
+                writeStatusLight(lego, 'off');
+                checking_color = false;
             end
         end
     end
