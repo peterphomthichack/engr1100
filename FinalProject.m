@@ -2,35 +2,32 @@ clear;
 clc;
 lego = legoev3('usb');
 clearLCD(lego)
-start_program = true;
 tone_delays = 0.3;
 
+%Sensors object
 gyro_sensor = gyroSensor(lego);
-
 sonic_sensor = sonicSensor(lego);
-
-% Color sensor initialization
 color_sensor = colorSensor(lego);
 
-% Motors initialization and settings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Motors declaration and initialization
 black_speed = 30;
 motor_speed = 45;
 right_motor = motor(lego,'C');
 left_motor = motor(lego,'B');
-
 right_motor.Speed = motor_speed;
 left_motor.Speed = motor_speed;
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Condition variables
 first_stop = false;
 checking_color = true;
 obstacles = false;
-
 angle_checking = true;
 resetRotationAngle(gyro_sensor);
 turning = true;
+start_program = true;
+
+%main
 while(start_program)
     if(readButton(lego, 'up') == 1)
         while(checking_color)
@@ -38,6 +35,7 @@ while(start_program)
             start(left_motor);
             color = readColor(color_sensor);
             checking_obstacles = readDistance(sonic_sensor);
+            % reduced speed of the motor using black color.
             if(color == "black")
                 writeLCD(lego, 'Approching a stop sign!');
                 writeStatusLight(lego, 'red', 'pulsing')
@@ -45,6 +43,8 @@ while(start_program)
                 right_motor.Speed = black_speed;
                 writeStatusLight(lego, 'off');
             end
+            % stop the motors for three seconds when the color sensor
+            % detects a red color
             if(color == "red" && first_stop == false)
                 left_motor.Speed = motor_speed;
                 right_motor.Speed = motor_speed;
@@ -58,7 +58,8 @@ while(start_program)
                 writeStatusLight(lego, 'green', 'solid');
                 first_stop = true;
             end
-
+            % change the direction of the robot after the ultrasonic sensor
+            % detects an obstacle within 0.17 meters.
             if(checking_obstacles <= 0.17 && turning == true)
                 disp(checking_obstacles);
                 stop(right_motor);
@@ -80,6 +81,7 @@ while(start_program)
                     end
                 end
             end
+            % stop the robot after the color sensor detects a green color.
             if(color == "green")
                 clearLCD(lego)
                 writeLCD(lego, 'Checkpoint Arrived!');
